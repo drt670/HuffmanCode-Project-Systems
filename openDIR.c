@@ -44,7 +44,7 @@ void listFilesRecursively(char *basePath) {
 			do {
 				c = name[x];
 				x++;
-			} while (c != "." || name[x] != NULL);
+			} while (c != "." || name[x] != NULL); //SEG FAULT IS IN THIS LINE - RUSS
 		
 			if (name[x] == NULL){
 				printf("%s\n", ptr->d_name);
