@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 void listFilesRecursively(char *path);
 
@@ -30,7 +31,33 @@ void listFilesRecursively(char *basePath) {
 	{
 		if (strcmp(ptr->d_name,".") != 0 && strcmp(ptr->d_name, "..") != 0)
 		{
-			printf("%s\n", ptr->d_name);
+
+			int length = strlen(ptr->d_name);
+			char *name = NULL;
+			name = malloc(sizeof(char) * length);
+			name = ptr->d_name;
+			char *type = NULL;
+			char c;
+			int x = 0, y = 0;
+			c = name[x];
+			
+			do {
+				c = name[x];
+				x++;
+			} while (c != "." || name[x] != NULL);
+		
+			if (name[x] == NULL){
+				printf("%s\n", ptr->d_name);
+			} else {
+			
+			type = name;				
+
+			if (strcmp(type,"txt") == 0)			
+				printf("%s\n", ptr->d_name);
+			}
+			
+			free(name);
+			
 
 			// create new path from our base path
 			strcpy(path, basePath);
