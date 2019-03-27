@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <"filecompressor.h">
 
 typedef struct node{
 	int data;
