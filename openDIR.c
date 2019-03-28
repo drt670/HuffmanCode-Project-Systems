@@ -6,35 +6,14 @@
 #include <fnmatch.h>
 #include <fcntl.h>
 
-static char perms_buff[30];
-
-const char *get_perms(mode_t mode) 
-{ 
-char ftype = '?'; 
-if (S_ISREG(mode)) ftype = '-'; 
-if (S_ISLNK(mode)) ftype = 'l'; 
-if (S_ISDIR(mode)) ftype = 'd'; 
-if (S_ISBLK(mode)) ftype = 'b'; 
-if (S_ISCHR(mode)) ftype = 'c'; 
-if (S_ISFIFO(mode)) ftype = '|'; 
-sprintf(perms_buff, "%c%c%c%c%c%c%c%c%c%c %c%c%c", 
-ftype, 
-mode & S_IRUSR ? 'r' : '-', 
-mode & S_IWUSR ? 'w' : '-', 
-mode & S_IXUSR ? 'x' : '-', 
-mode & S_IRGRP ? 'r' : '-', 
-mode & S_IWGRP ? 'w' : '-', 
-mode & S_IXGRP ? 'x' : '-', 
-mode & S_IROTH ? 'r' : '-', 
-mode & S_IWOTH ? 'w' : '-', 
-mode & S_IXOTH ? 'x' : '-', 
-mode & S_ISUID ? 'U' : '-', 
-mode & S_ISGID ? 'G' : '-', 
-mode & S_ISVTX ? 'S' : '-'); 
-return (const char *)perms_buff; 
-} 
-
 void listFilesRecursively(char *path);
+
+int isRegFile(const char *path)
+{
+    struct stat path_stat;
+    stat(path, &path_stat);
+    return S_ISREG(path_stat.st_mode);
+}
 
 int main() {
 
@@ -53,9 +32,6 @@ void listFilesRecursively(char *basePath) {
 	struct dirent *ptr;
 	DIR *dir = opendir(basePath);
 
-	struct stat statbuf;
-	struct passwd *pwd;
-
 	// Unable to open directory
 	if (!dir)
 		return;
@@ -65,12 +41,18 @@ void listFilesRecursively(char *basePath) {
 		if (strcmp(ptr->d_name,".") != 0 && strcmp(ptr->d_name, "..") != 0)
 		{
 
-			if (stat(ptr->d_name, &statbuf) == -1)
-        			continue;			
+			if (isRegFile(ptr->d_name) == 0 && (fnmatch("*.git",basePath,0) == 0 || fnmatch("*.vscode",basePath,0) == 0)) 
+				break;
+					
+			
+			// create new path from our base path
+			strcpy(path, basePath);
+			strcat(path, "/");
+			//printf("/");
+			strcat(path, ptr->d_name);
 
-			 printf("%10.10s", get_perms (statbuf.st_mode));
-   			 printf("%4d", statbuf.st_nlink);
-
+			if (fnmatch("*git",path,0) != 0 && fnmatch("*vscode",path,0) != 0)			
+				printf("%s\n",path);
 			/*
 			if (fnmatch("*.txt",ptr->d_name,0) == 0) 
 				printf("%s\n",ptr->d_name);
@@ -84,12 +66,6 @@ void listFilesRecursively(char *basePath) {
 			if (fnmatch("*.md",ptr->d_name,0) == 0) 
 				printf("%s\n",ptr->d_name);
 			*/
-
-			// create new path from our base path
-			strcpy(path, basePath);
-			strcat(path, "/");
-			strcat(path, ptr->d_name);
-			//printf("%s", ptr->d_name);
 
 			listFilesRecursively(path);
 
