@@ -267,7 +267,7 @@ void inOrder(struct node *root)
     if (root != NULL)
     {
         inOrder(root->left);
-        printf("%d:%d\n", root->key, root->count);
+        printf("%c:%d\n", root->key, root->count);
         inOrder(root->right);
     }
 }

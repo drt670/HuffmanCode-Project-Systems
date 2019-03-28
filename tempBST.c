@@ -35,14 +35,18 @@ char *getStringFromFile(char *path)
         size++;
         i++;
     }
-    printf("i: %d size:%d\n", i, size);
+    printf("number of chars in file:%d\n", size);
     buffer[0][size] = '\0';
     
     close(fd);
     return buffer[0];
 }
 
-
+struct Node* addToAVL(char * c){
+    return NULL;
+}
+void generateHuffmanTree(struct Node* n){
+}
 int main(int argc, char **argv)
 {
     char *filename;
@@ -50,16 +54,18 @@ int main(int argc, char **argv)
     int x;
     char * string;
     string =getStringFromFile(filename);
+    
+    struct Node* avlRoot = addToAVL(string);
+    generateHuffmanTree(avlRoot);
     //printf("%s", string);
-    struct Node* root = NULL;
+    struct node* root = NULL;
     for (x = 0; string[x]!='\0'; x++)
     {
         printf("%c", string[x]);
-       // printf("x=%d\tbuffer:%c\t", x, string[x]);
         root = insert(root, string[x]);
-       // printf("ascii:%d\n", string[x]);
        
     }
+    printf("\n");
     
 
     printf("Inorder traversal of the constructed AVL"
