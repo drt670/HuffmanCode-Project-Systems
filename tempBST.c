@@ -3,46 +3,67 @@
 #include <fcntl.h>
 #include <errno.h>
 #include "avl.c"
-//given a file, go word by word and add unique words and their frequencies into an avl tree
-//to run : gcc -O -g -o tempBST tempBST.c
-int main(int argc, char **argv)
+
+//Given a filepath, this function will return a null terminated string of the file.
+char *getStringFromFile(char *path)
 {
-    char *filename;
-    filename = argv[1];
-    printf("Filename:%s\n", filename);
-
-    int fd = open(filename, O_RDONLY);
-
-    if (fd == -1)
+    int bufSize = 1000;
+    int elementSize = 131072;
+    unsigned char **buffer = malloc(sizeof(unsigned char *) * bufSize);
+    int z;
+    for (z = 0; z < bufSize; z++)
     {
-        // we have an error
-        printf("Error Number % d\n", errno);
+        buffer[z] = malloc(sizeof(unsigned char) * elementSize);
     }
-    char buffer[4096];
     int length;
-    //int fd;
-
+    
+    int fd;
     /* Open the file, print error message if we fail */
-    if ((fd = open(filename, O_RDONLY)) < 0)
+    if ((fd = open(path, O_RDONLY)) < 0)
     {
         perror("Unable to open data");
         exit(1);
     }
+    printf("Filename:%s\n", path);
+    int i = 0;
+    int size = 0;
+    while ((length = read(fd, buffer[0] + i, 1)) > 0)
+    {
 
-    /* Copy file contents to stdout, stop when read returns 0 (EOF) */
-    while ((length = read(fd, buffer, 4096)) > 0)
-        write(1, buffer, length);
-
+        //printf("i=%d\tbuffer:%c\t", i, buffer[0][i]);
+        //printf("ascii:%d\n", buffer[0][i]);
+        size++;
+        i++;
+    }
+    printf("i: %d size:%d\n", i, size);
+    buffer[0][size] = '\0';
+    
     close(fd);
-    // struct Node *root = NULL;
-    // root = insert(root, 10);
-    // root = insert(root, 20);
-    // root = insert(root, 30);
-    // root = insert(root, 40);
-    // root = insert(root, 50);
-    // root = insert(root, 25);
-    // printf("Inorder traversal of the constructed AVL"
-    //        " tree is \n");
-    // inOrder(root);
+    return buffer[0];
+}
+
+
+int main(int argc, char **argv)
+{
+    char *filename;
+    filename = argv[1];
+    int x;
+    char * string;
+    string =getStringFromFile(filename);
+    //printf("%s", string);
+    struct Node* root = NULL;
+    for (x = 0; string[x]!='\0'; x++)
+    {
+        printf("%c", string[x]);
+       // printf("x=%d\tbuffer:%c\t", x, string[x]);
+        root = insert(root, string[x]);
+       // printf("ascii:%d\n", string[x]);
+       
+    }
+    
+
+    printf("Inorder traversal of the constructed AVL"
+           " tree is \n");
+    inOrder(root);
     return 0;
 }
