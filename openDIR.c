@@ -40,7 +40,8 @@ void listFilesRecursively(char *basePath) {
 	{
 		if (strcmp(ptr->d_name,".") != 0 && strcmp(ptr->d_name, "..") != 0)
 		{
-
+			
+			// checks to see if reg file, and if so checks to see if .git or .vscode is in the string to break the loop
 			if (isRegFile(ptr->d_name) == 0 && (fnmatch("*.git",basePath,0) == 0 || fnmatch("*.vscode",basePath,0) == 0)) 
 				break;
 					
@@ -48,25 +49,12 @@ void listFilesRecursively(char *basePath) {
 			// create new path from our base path
 			strcpy(path, basePath);
 			strcat(path, "/");
-			//printf("/");
 			strcat(path, ptr->d_name);
 
-			if (fnmatch("*git",path,0) != 0 && fnmatch("*vscode",path,0) != 0)			
+			// checks to see if path includes git or vscode, if not prints out path
+			if (fnmatch("*git",path,0) != 0 && fnmatch("*vscode",path,0) != 0 && (fnmatch("*.txt",path,0) == 0 || fnmatch("*.c",path,0) == 0 || 				    fnmatch("*.h",path,0) == 0 || fnmatch("*.md",path,0) == 0))			
 				printf("%s\n",path);
-			/*
-			if (fnmatch("*.txt",ptr->d_name,0) == 0) 
-				printf("%s\n",ptr->d_name);
-
-			if (fnmatch("*.c",ptr->d_name,0) == 0) 
-				printf("%s\n",ptr->d_name);
-		
-			if (fnmatch("*.h",ptr->d_name,0) == 0) 
-				printf("%s\n",ptr->d_name);
-
-			if (fnmatch("*.md",ptr->d_name,0) == 0) 
-				printf("%s\n",ptr->d_name);
-			*/
-
+			
 			listFilesRecursively(path);
 
 		}
