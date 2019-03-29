@@ -14,13 +14,13 @@ struct mhNode {
 };
 
 // Helper function to create new node for linked list
-struct mhNode* llNode(char * key) {
+struct mhNode* llNode(char * key, int frequency) {
 
 	struct mhNode* node = (struct mhNode*) malloc(sizeof(struct mhNode));
-	mhNode->frequency = node->key;
+	mhNode->frequency = key;
 	mhNode->left = NULL;
 	mhNode->right = NULL;
-	mhNode->data = node->count;
+	mhNode->data = frequency;
 	return (mhNode);
 }
 
@@ -35,7 +35,7 @@ struct Queue {
 	struct qNode *front, *rear, *leftChild, *rightChild; 
 }; 
   
-// Create a new linked list node 
+// Create a new linked list node for queue
 struct qNode* newNode(int k, char *data) { 
 	
 	struct qNode *temp = (struct QNode*)malloc(sizeof(struct qNode)); 
@@ -59,7 +59,7 @@ struct Queue *newQueue() {
 void enQueue(struct Queue *q, int k, char *data) { 
     
 	// Create new linked list node
-	struct QNode *temp = newNode(k); 
+	struct QNode *temp = llNode(k, data); 
   
 	// If queue is empty, then new node is front and rear
 	if (q->rear == NULL) {
@@ -144,14 +144,16 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
 	// Take the parent node from the q and remove it from q 
 	dequeue(q);
   
-        // Take next two nodes from the linked list and 
-        // Add them as children of the current parent node 
-        // Also in push them into the queue so that 
-        // they will be parents to the future nodes 
+        /* Take next two nodes from the linked list and 
+       	   Add them as children of the current parent node. 
+           Also, push them into the queue so that 
+           they will be parents to the future nodes 
+	*/	
+
 	mhNode *leftChild = head; 
 	head = head->right;        // advance linked list to next node 
 	leftChild->right = NULL; // set its right child to NULL 
-	enqueue(leftChild, FREQUENCY); 
+	enqueue(leftChild, head->frequency, head->data); 
   
         // Assign the left child of parent 
 	parent->left = leftChild; 
@@ -161,7 +163,7 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
 		mhNode *rightChild = head; 
 		head = head->right; // advance linked list to next node 
 		rightChild->right = NULL; // set its right child to NULL 
-		enqueue(rightChild, FREQUENCY); 
+		enqueue(rightChild, head->frequency, head->data); 
   
             // Assign the right child of parent 
 		parent->right = rightChild; 
@@ -173,7 +175,7 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
 mhNode* convertMin(mhNode* &root) { 
     
 	// head of Linked List 
-	mhNode *head = llNode(root); 
+	mhNode *head = llNode(root->key, root->count); 
   
 	// Convert a given BST to Sorted Linked List 
 	BSTToSortedLL(root, &head); 
@@ -187,7 +189,8 @@ mhNode* convertMin(mhNode* &root) {
 
 int main() {
 
-	convertMin(root);
+	mhNode *base = llNode(root->key, root->count);
+	convertMin(base);
 
 	
 	
