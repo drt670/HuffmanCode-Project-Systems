@@ -32,7 +32,7 @@ struct qNode {
   
 // Front stores the front node of the linked list and rear stores the last node of the linked list
 struct Queue { 
-	struct qNode *front, *rear, *leftChild, *rightChild; 
+	struct qNode *front, *rear;
 }; 
   
 // Create a new linked list node for queue
