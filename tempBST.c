@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "avl.c"
+#include "bst.c"
 
 //Given a filepath, this function will return a null terminated string of the file.
 char *getStringFromFile(char *path)
@@ -16,7 +16,7 @@ char *getStringFromFile(char *path)
         buffer[z] = malloc(sizeof(unsigned char) * elementSize);
     }
     int length;
-    
+
     int fd;
     /* Open the file, print error message if we fail */
     if ((fd = open(path, O_RDONLY)) < 0)
@@ -37,39 +37,51 @@ char *getStringFromFile(char *path)
     }
     printf("number of chars in file:%d\n", size);
     buffer[0][size] = '\0';
-    
+
     close(fd);
     return buffer[0];
 }
 
-struct Node* addToAVL(char * c){
-    return NULL;
-}
-void generateHuffmanTree(struct Node* n){
-}
+
+// void generateHuffmanTree(struct Node *n)
+// {
+// }
 int main(int argc, char **argv)
 {
     char *filename;
     filename = argv[1];
     int x;
-    char * string;
-    string =getStringFromFile(filename);
-    
-    struct Node* avlRoot = addToAVL(string);
-    generateHuffmanTree(avlRoot);
-    //printf("%s", string);
-    struct node* root = NULL;
-    for (x = 0; string[x]!='\0'; x++)
-    {
-        printf("%c", string[x]);
-        root = insert(root, string[x]);
-       
-    }
-    printf("\n");
-    
+    char *string;
+    compressFile(filename);
+    //string = getStringFromFile(filename);
 
-    printf("Inorder traversal of the constructed AVL"
-           " tree is \n");
-    inOrder(root);
+    //struct Node *avlRoot = addToAVL(string);
+    //generateHuffmanTree(avlRoot);
+    //printf("%s", string);
+
     return 0;
+}
+void compressFile(char *path)
+{
+    struct node *root = NULL;
+    struct node *rootCopy = NULL;
+    char *text = getStringFromFile(path);
+    // printf("%s", text);
+    char delimit[] = " \t\r\n\v\f";
+    //int i = 0, j = 0;
+    char *token;
+    token = strtok(text, delimit);
+    
+    root = insertBST(root, token);
+    rootCopy=root;
+    while (token != NULL)
+    {
+        printf("found token:%s\n", token);
+        token = strtok(NULL, delimit);
+        if(token!=NULL)
+        root = insertBST(root, token);
+    }
+    inOrder(root);
+    printf("string has been tokenized.\n");
+    insertIntoAVL(root);
 }

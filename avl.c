@@ -7,7 +7,7 @@
 
 // An AVL tree node
 struct node {
-int key;
+char * key;
 struct node* left;
 struct node* right;
 int height;
@@ -33,10 +33,9 @@ return (a > b) ? a : b;
 
 /* Helper function that allocates a new node with the given key and
 NULL left and right pointers. */
-struct node* newNode(int key)
+struct node* newNode(char * key)
 {
-struct node* node = (struct node*)
-malloc(sizeof(struct node));
+struct node* node = (struct node*) malloc(sizeof(struct node));
 node->key = key;
 node->left = NULL;
 node->right = NULL;
@@ -95,23 +94,24 @@ return 0;
 return height(N->left) - height(N->right);
 }
 
-struct node* insert(struct node* node, int key)
+struct node* insert(struct node* node, char * key, int count)
 {
 /* 1. Perform the normal BST rotation */
 if (node == NULL)
 return (newNode(key));
 
 // If key already exists in BST, increment count and return
-if (key == node->key) {
+if(keyExists(key, node))
+if (strcmp(key, node->key)==0) {
 (node->count)++;
 return node;
 }
 
 /* Otherwise, recur down the tree */
-if (key < node->key)
-node->left = insert(node->left, key);
+if (count< node->count)
+node->left = insert(node->left, key, node->count);
 else
-node->right = insert(node->right, key);
+node->right = insert(node->right, key, node->count);
 
 /* 2. Update height of this ancestor node */
 node->height = max(height(node->left), height(node->right)) + 1;
@@ -127,21 +127,21 @@ int balance = getBalance(node);
 // If this node becomes unbalanced, then there are 4 cases
 
 // Left Left Case
-if (balance > 1 && key < node->left->key)
+if (balance > 1 && count < node->left->count)
 return rightRotate(node);
 
 // Right Right Case
-if (balance < -1 && key > node->right->key)
+if (balance < -1 && count> node->right->count)
 return leftRotate(node);
 
 // Left Right Case
-if (balance > 1 && key > node->left->key) {
+if (balance > 1 && count> node->left->count){
 node->left = leftRotate(node->left);
 return rightRotate(node);
 }
 
 // Right Left Case
-if (balance < -1 && key < node->right->key) {
+if (balance < -1 && count< node->right->count){
 node->right = rightRotate(node->right);
 return leftRotate(node);
 }
@@ -168,7 +168,7 @@ return current;
 
  
 
-struct node* deleteNode(struct node* root, int key)
+struct node* deleteNode(struct node* root, char * key)
 {
 // STEP 1: PERFORM STANDARD BST DELETE
 
@@ -177,12 +177,12 @@ return root;
 
 // If the key to be deleted is smaller than the root’s key,
 // then it lies in left subtree
-if (key < root->key)
+if (strcmp(key,root->key)<0)
 root->left = deleteNode(root->left, key);
 
 // If the key to be deleted is greater than the root’s key,
 // then it lies in right subtree
-else if (key > root->key)
+else if (strcmp(key,root->key)>0)
 root->right = deleteNode(root->right, key);
 
 // if key is same as root’s key, then This is the node
@@ -267,7 +267,7 @@ void inOrder(struct node *root)
     if (root != NULL)
     {
         inOrder(root->left);
-        printf("%c:%d\n", root->key, root->count);
+        printf("%s:%d\n", root->key, root->count);
         inOrder(root->right);
     }
 }
