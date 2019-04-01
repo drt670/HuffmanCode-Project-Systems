@@ -1,30 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <"avl.c">
 
-/* Basically I am traversing through the BST recursively and storing them into a Linked List, then I am converting that Linked List into a Min-Heap*/
-
-// Node for BST/Min-Heap
-struct mhNode {
-
-	struct mhNode *left;
-	struct mhNode *right;
+typedef struct Node 
+{ 
+	struct Node *left
+	struct Node *right;
 	char *data;
-	int frequency;
-};
+	int frequency; 
 
-// Helper function to create new node for linked list
-struct mhNode* llNode(char * key, int frequency) {
 
-	struct mhNode* node = (struct mhNode*) malloc(sizeof(struct mhNode));
-	mhNode->frequency = key;
-	mhNode->left = NULL;
-	mhNode->right = NULL;
-	mhNode->data = frequency;
-	return (mhNode);
+}Node; 
+
+struct Node* llNode(char * key, int frequency) {
+
+	struct Node* node = (struct mhNode*) malloc(sizeof(struct mhNode));
+	Node->frequency = key;
+	Node->left = NULL;
+	Node->right = NULL;
+	Node->data = frequency;
+	return (node);
 }
+  
+// Utility function for allocating node for BST 
+Node* newNode(int frequency, char* data)
+{ 
+	struct Node* node = (struct Node*) malloc(sizeof(struct Node));
+	node->frequency = frequency; 
+	node->data = data;
+	node->left = node->right = NULL; 
+	return node; 
+} 
 
-// A linked list node to store a queue entry 
 struct qNode { 
 	int key; 
 	struct qNode *next; 
@@ -36,7 +42,7 @@ typedef struct Queue {
 }; 
   
 // Create a new linked list node for queue
-struct qNode* newNode(int k, char *data) { 
+struct qNode* newQ(int k, char *data) { 
 	
 	struct qNode *temp = (struct QNode*)malloc(sizeof(struct qNode)); 
 	temp->key = k;
@@ -94,37 +100,32 @@ struct QNode *deQueue(struct Queue *q) {
 	return temp; 
 } 
 
-void BSTToSortedLL(mhNode* root, mhNode** head_ref) { 
+Node* flattenToLL(Node* root) {
     
-	// If root is empty return 0 
-	if(root == NULL) 
-		return 0; 
-  
-	// Recursively convert the right subtree
-	BSTToSortedLL(root->right, head_ref); 
-  
-	// Place root inside of linked list
-	root->right = *head_ref; 
-  
-	// Change left pointer of previous head to point to NULL
-	if (*head_ref != NULL) 
-		(*head_ref)->left = NULL; 
+	Node *list1 = (root->left) ? flattenToLL(root->left) : NULL;
+	Node *list2 = (root->right) ? flattenToLL(root->right) : NULL;
+	Node *list3 = newNode(root->frequency);
+	
+	// The "middle" list3 cannot be NULL; append list2 to list3
+	list3->right = list2; // If list2 is NULL, it's OK
+    
+	if (!list1) return list3; // Nothing to prepend
+		Node *last = list1;
+    
+	while (last->right) last=last->right; // Go to the end of list1
+		last->right = list3; // Append list3+list2 to the end of list1
+    
+	return list1;
+}
 
-	// Change head of linked list 
-	*head_ref = root; 
-  
-	// Recursively convert left subtree 
-	BSTToSortedLL(root->left, head_ref); 
-} 
-
-void SortedLLToMinHeap(mhNode* &root, mhNode* head) { 
+void SortedLLToMinHeap(Node* &root, Node* head) { 
 	
 	// Base Case 
 	if (head == NULL) 
 		return; 
   
 	// create empty queue to store parent nodes
-	struct Queue *q = newQueue(); 
+	struct Queue *q = newQ(); 
   
 	// The first node is always the root node 
 	root = head; 
@@ -142,6 +143,7 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
 	while (head) { 
         
 	// Take the parent node from the q and remove it from q 
+	Node *parent = root;
 	dequeue(q);
   
         /* Take next two nodes from the linked list and 
@@ -150,7 +152,7 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
            they will be parents to the future nodes 
 	*/	
 
-	mhNode *leftChild = head; 
+	Node *leftChild = head; 
 	head = head->right;        // advance linked list to next node 
 	leftChild->right = NULL; // set its right child to NULL 
 	enqueue(leftChild, head->frequency, head->data); 
@@ -160,7 +162,7 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
   
 	if (head) 
 	{ 
-		mhNode *rightChild = head; 
+		Node *rightChild = head; 
 		head = head->right; // advance linked list to next node 
 		rightChild->right = NULL; // set its right child to NULL 
 		enqueue(rightChild, head->frequency, head->data); 
@@ -171,29 +173,14 @@ void SortedLLToMinHeap(mhNode* &root, mhNode* head) {
     } 
 } 
 
-// Function to convert BST into a Min-Heap 
-mhNode* convertMin(mhNode* &root) { 
-    
-	// head of Linked List 
-	mhNode *head = llNode(root->key, root->count); 
+int main() 
+{ 
+
+	Node *list1 = flattenToLL(root);
+	
+	root = NULL;
+
+	sortedLLToMinHeap(root, list1);
   
-	// Convert a given BST to Sorted Linked List 
-	BSTToSortedLL(root, &head); 
-  
-	// set root as NULL 
-	root = NULL; 
-  
-	// Convert Sorted Linked List to Min-Heap 
-	SortedLLToMinHeap(root, head); 
+	return 0; 
 } 
-
-int main() {
-
-	mhNode *base = llNode(root->key, root->count);
-	convertMin(base);
-
-	
-	
-}
-
-

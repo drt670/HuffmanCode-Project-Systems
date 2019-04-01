@@ -64,7 +64,10 @@ int comparator(const void *p, const void *q)
 { 
     int l = ((struct nodeBST *)p)->count; 
     int r = ((struct nodeBST *)q)->count;  
-    return (l - r); 
+    if((l-r)==0){
+        
+    }
+    return (l - r);
 } 
 void compressFile(char *path)
 {
@@ -98,7 +101,7 @@ void compressFile(char *path)
         printf("tempBST: root is null.\n");
     }
 
-    struct nodeBST *words[numTokens];
+    struct nodeBST *words[1146];
 
     printf("numTokens:%d words.\n", numTokens);
     int numTokensActual = AddToArray(root, &words, 0);
@@ -107,10 +110,10 @@ void compressFile(char *path)
         
        printf("words[%d]:%s: \n", i, ((struct nodeBST*)words[i])->key);
     }
-    qsort(words,sizeof(words)/sizeof(words[0]), sizeof(words[0]), comparator );
+    qsort(words,numTokensActual, sizeof(words[0]), comparator );
     for(i=0; i<numTokensActual; i++ ){
         
-       printf("sorted words[%d]:%s: \n", i, ((struct nodeBST*)words[i])->key);
+       printf("sorted words[%d]:%s: %d \n", i, ((struct nodeBST*)words[i])->key, ((struct nodeBST*)words[i])->count);
     }
    // words[1000] = root->right;
    // printf("words[1000]: %s\n", (&words)[1000]->key );
