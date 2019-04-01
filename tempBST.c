@@ -2,7 +2,77 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <assert.h>
 #include "bst.c"
+
+static
+void Merge(nodeBST **arr, int low, int mid, int high)
+{
+    int mergedSize = high - low + 1;
+    nodeBST **temp = (nodeBST **)malloc(mergedSize * sizeof(nodeBST*));
+    int mergePos = 0;
+    int leftPos = low;
+    int rightPos = mid + 1;
+
+    //printf("-->> %s: lo = %d, md = %d, hi = %d, sz = %d\n", __func__, low, mid, high, mergedSize);
+
+    //printf("L = %d, M = %d; R = %d, H = %d\n", leftPos, mid, rightPos, high);
+    while (leftPos <= mid && rightPos <= high)      // Key change
+    {
+        //printf("a[%d].c = %d <=> a[%d].c = %d\n", leftPos, arr[leftPos].count,
+        //       rightPos, arr[rightPos].count);
+        if (arr[leftPos]->count < arr[rightPos]->count)
+        {
+            //printf("L1: a[%d].c = %d\n", leftPos, arr[leftPos].count);
+            temp[mergePos++] = arr[leftPos++];
+        }
+        else
+        {
+            //printf("R1: a[%d].c = %d\n", rightPos, arr[rightPos].count);
+            temp[mergePos++] = arr[rightPos++];
+        }
+        //printf("L = %d, M = %d; R = %d, H = %d\n", leftPos, mid, rightPos, high);
+    }
+
+    while (leftPos <= mid)
+    {
+        //printf("L2: a[%d].c = %d\n", leftPos, arr[leftPos].count);
+        temp[mergePos++] = arr[leftPos++];
+    }
+
+    while (rightPos <= high)
+    {
+        //printf("R2: a[%d].c = %d\n", rightPos, arr[rightPos].count);
+        temp[mergePos++] = arr[rightPos++];
+    }
+
+    assert(mergePos == mergedSize);
+
+    //PrintArray("merged", mergedSize, temp);
+
+    for (mergePos = 0; mergePos < mergedSize; ++mergePos)
+        arr[low + mergePos] = temp[mergePos];
+
+    free(temp);         // Key change
+    //printf("<<-- %s: lo = %d, md = %d, hi = %d, sz = %d\n", __func__, low, mid, high, mergedSize);
+}
+
+static
+void MergeSort(nodeBST **arr, int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        //printf("-->> %s: lo = %d, md = %d, hi = %d\n", __func__, low, mid, high);
+
+        MergeSort(arr, low, mid);
+        MergeSort(arr, mid + 1, high);
+
+        Merge(arr, low, mid, high);
+        //printf("<<-- %s: lo = %d, md = %d, hi = %d\n", __func__, low, mid, high);
+    }
+}
+
 
 //Given a filepath, this function will return a null terminated string of the file.
 char *getStringFromFile(char *path)
@@ -52,6 +122,7 @@ int main(int argc, char **argv)
     int x;
     char *string;
     compressFile(filename);
+
     //string = getStringFromFile(filename);
 
     //struct Node *avlRoot = addToAVL(string);
@@ -62,12 +133,10 @@ int main(int argc, char **argv)
 }
 int comparator(const void *p, const void *q)  
 { 
-    int l = ((struct nodeBST *)p)->count; 
-    int r = ((struct nodeBST *)q)->count;  
-    if((l-r)==0){
-        
-    }
-    return (l - r);
+	struct nodeBST * a = (struct nodeBST**) p;    
+    struct nodeBST * b = (struct nodeBST**) q;
+
+   return a->count - b->count;
 } 
 void compressFile(char *path)
 {
@@ -101,20 +170,33 @@ void compressFile(char *path)
         printf("tempBST: root is null.\n");
     }
 
-    struct nodeBST *words[1146];
+    struct nodeBST *words[1145];
+    int z;
+    for(z = 0; z < 1145; z++)
+    {
+        words[z]=malloc(sizeof(nodeBST));
+    }
+    
 
     printf("numTokens:%d words.\n", numTokens);
-    int numTokensActual = AddToArray(root, &words, 0);
+    int numTokensActual = AddToArray(root, words, 0);
     int i;
+
+	MergeSort(words, 0, numTokensActual - 1);
+
+
+
+/*
     for(i=0; i<numTokensActual; i++ ){
         
        printf("words[%d]:%s: \n", i, ((struct nodeBST*)words[i])->key);
     }
-    qsort(words,numTokensActual, sizeof(words[0]), comparator );
+
+    qsort(*words,numTokensActual,sizeof(nodeBST), comparator); */
     for(i=0; i<numTokensActual; i++ ){
         
        printf("sorted words[%d]:%s: %d \n", i, ((struct nodeBST*)words[i])->key, ((struct nodeBST*)words[i])->count);
-    }
+    } 
    // words[1000] = root->right;
    // printf("words[1000]: %s\n", (&words)[1000]->key );
     // add inorder of sorted alphabetically list to stack
