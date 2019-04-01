@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "avl2.c"
-struct nodeBST
+typedef struct nodeBST
 {
     char *key;
     int count;
     struct nodeBST *left;
     struct nodeBST *right;
-};
+}nodeBST;
 
 struct nodeBST *newNodeBST(char *key)
 {
@@ -27,6 +27,24 @@ struct nodeBST *newNodeBST2(char *key, int count)
     n->right = NULL;
     return n;
 }
+int AddToArray( nodeBST *node,  nodeBST **arr, int i)
+{
+    if (node == NULL)
+        return i;
+
+    if (node->left != NULL)
+        i = AddToArray(node->left, arr, i);
+    //printf("Adding To Array[%d]: %s:%d\n",i, node->key, node->count);
+    //arr[i] = node;
+    arr[i] = newNodeBST2(node->key, node->count);
+    //printf("added array[%d]: %s\n", i, arr[i]->key);
+    i++;
+    if (node->right != NULL)
+        i = AddToArray(node->right, arr, i);
+
+    return i;
+}
+
 
 struct nodeBST *insertBST(struct nodeBST *root, char *key)
 {
@@ -52,12 +70,13 @@ struct nodeBST *insertBST(struct nodeBST *root, char *key)
 }
 struct nodeBST *insertBSTbyCount(struct nodeBST *root, struct nodeBST *unsorted)
 {
+    int decider =0;
     if (root == NULL)
     {
         return newNodeBST2(unsorted->key, unsorted->count);
     }
-    int bal = unsorted->count - 
-    root->count;
+    int bal = unsorted->count -
+              root->count;
     if (bal == 0)
     {
         //(root->count)++;
@@ -86,8 +105,8 @@ void inOrderBST(struct nodeBST *root)
     }
     //printf("inOrderBST: root is null\n");
 }
-struct nodeBST* inOrderBSTsort(struct nodeBST *root, struct nodeBST *unsorted)
-{    //printf("inOrderBSTsort: root is null\n");
+struct nodeBST *inOrderBSTsort(struct nodeBST *root, struct nodeBST *unsorted)
+{ //printf("inOrderBSTsort: root is null\n");
 
     if (root != NULL)
     {
@@ -107,14 +126,16 @@ void inOrderAVL(struct node *root)
         inOrderAVL(root->right);
     }
 }
-int minValue(struct nodeBST* node) { 
-  struct nodeBST* current = node; 
-  
-  /* loop down to find the leftmost leaf */
-  while (current->left != NULL) { 
-    current = current->left; 
-  } 
-  return(current->key); 
+int minValue(struct nodeBST *node)
+{
+    struct nodeBST *current = node;
+
+    /* loop down to find the leftmost leaf */
+    while (current->left != NULL)
+    {
+        current = current->left;
+    }
+    return (current->key);
 }
 void insertIntoAVL(struct nodeBST *root, struct node **avl)
 {
@@ -122,13 +143,12 @@ void insertIntoAVL(struct nodeBST *root, struct node **avl)
     {
         return;
     }
-    
-        insertIntoAVL(root->left, *(&avl));
-        printf("inserting %s:%d\n", root->key, root->count);
-        
-        *avl = insert(*avl, root->key, root->count);
-        inOrderAVL(*avl);
-        return;
-        insertIntoAVL(root->right, *(&avl));
-    
+
+    insertIntoAVL(root->left, *(&avl));
+    printf("inserting %s:%d\n", root->key, root->count);
+
+    *avl = insert(*avl, root->key, root->count);
+    inOrderAVL(*avl);
+    return;
+    insertIntoAVL(root->right, *(&avl));
 }

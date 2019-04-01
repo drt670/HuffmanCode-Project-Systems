@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "stack.c"
+#include "bst.c"
 
 //Given a filepath, this function will return a null terminated string of the file.
 char *getStringFromFile(char *path)
@@ -60,10 +60,16 @@ int main(int argc, char **argv)
 
     return 0;
 }
+int comparator(const void *p, const void *q)  
+{ 
+    int l = ((struct nodeBST *)p)->count; 
+    int r = ((struct nodeBST *)q)->count;  
+    return (l - r); 
+} 
 void compressFile(char *path)
 {
-    struct node *root = NULL;
-    struct node *rootCopy = NULL;
+    struct nodeBST *root = NULL;
+    struct nodeBST *rootCopy = NULL;
     char *text = getStringFromFile(path);
     // printf("%s", text);
     char delimit[] = " \t\r\n\v\f";
@@ -73,12 +79,15 @@ void compressFile(char *path)
 
     root = insertBST(root, token);
     rootCopy = root;
+    int numTokens=1;
     while (token != NULL)
     {
         printf("found token:%s\n", token);
         token = strtok(NULL, delimit);
-        if (token != NULL)
+        if (token != NULL){
             root = insertBST(root, token);
+            numTokens++;
+        }
     }
     printf("string has been tokenized.\n");
     //prints inorder of bst sorted alphabetically
@@ -89,19 +98,35 @@ void compressFile(char *path)
         printf("tempBST: root is null.\n");
     }
 
+    struct nodeBST *words[numTokens];
+
+    printf("numTokens:%d words.\n", numTokens);
+    int numTokensActual = AddToArray(root, &words, 0);
+    int i;
+    for(i=0; i<numTokensActual; i++ ){
+        
+       printf("words[%d]:%s: \n", i, ((struct nodeBST*)words[i])->key);
+    }
+    qsort(words,sizeof(words)/sizeof(words[0]), sizeof(words[0]), comparator );
+    for(i=0; i<numTokensActual; i++ ){
+        
+       printf("sorted words[%d]:%s: \n", i, ((struct nodeBST*)words[i])->key);
+    }
+   // words[1000] = root->right;
+   // printf("words[1000]: %s\n", (&words)[1000]->key );
     // add inorder of sorted alphabetically list to stack
 
     //insert into sorted bst
-    struct nodeBST *sorted = NULL;
-    inOrder(root, &sorted);
-    printf("tempBST: list has been sorted by frequency.\n");
+    //struct nodeBST *sorted = NULL;
+   // inOrder(root, &sorted);
+   // printf("tempBST: list has been sorted by frequency.\n");
 
-if (sorted == NULL)
-    {
-        printf("tempBST: sorted is null.\n");
-    }
+// if (sorted == NULL)
+//     {
+//         printf("tempBST: sorted is null.\n");
+//     }
     //prints inorder of bst sorted by word frequency
-    inOrderBST(sorted);
+    //inOrderBST(sorted);
 
     // insertIntoAVL(root,&avl);
     //inOrderAVL(avl);
