@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
-#include "bst.c"
+#include "sortedToHuffman.c"
 
 static
 void Merge(nodeBST **arr, int low, int mid, int high)
@@ -193,10 +193,16 @@ void compressFile(char *path)
     }
 
     qsort(*words,numTokensActual,sizeof(nodeBST), comparator); */
+		
+	
     for(i=0; i<numTokensActual; i++ ){
         
        printf("sorted words[%d]:%s: %d \n", i, ((struct nodeBST*)words[i])->key, ((struct nodeBST*)words[i])->count);
+
     } 
+
+	HuffmanCodes(words, numTokensActual);
+
    // words[1000] = root->right;
    // printf("words[1000]: %s\n", (&words)[1000]->key );
     // add inorder of sorted alphabetically list to stack

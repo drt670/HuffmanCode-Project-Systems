@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <bst.c>
+#include <tempBST.c>
 
 typedef struct Node 
 { 

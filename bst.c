@@ -81,7 +81,7 @@ struct nodeBST *insertBSTbyCount(struct nodeBST *root, struct nodeBST *unsorted)
     {
         //(root->count)++;
         //return newNodeBST2(unsorted->key, unsorted->count);
-        root->left = insertBSTbyCount(root->left, unsorted);
+         root->left = insertBSTbyCount(root->left, unsorted);
         //return root;
     }
     if (bal < 0)
@@ -117,6 +117,7 @@ struct nodeBST *inOrderBSTsort(struct nodeBST *root, struct nodeBST *unsorted)
         return root;
     }
 }
+/*
 void inOrderAVL(struct node *root)
 {
     if (root != NULL)
@@ -126,17 +127,20 @@ void inOrderAVL(struct node *root)
         inOrderAVL(root->right);
     }
 }
+/*
 int minValue(struct nodeBST *node)
 {
     struct nodeBST *current = node;
 
-    /* loop down to find the leftmost leaf */
+    
     while (current->left != NULL)
     {
         current = current->left;
     }
     return (current->key);
-}
+}  
+
+
 void insertIntoAVL(struct nodeBST *root, struct node **avl)
 {
     if (root == NULL)
@@ -152,3 +156,4 @@ void insertIntoAVL(struct nodeBST *root, struct node **avl)
     return;
     insertIntoAVL(root->right, *(&avl));
 }
+*/
