@@ -11,7 +11,8 @@ typedef struct nodeBST
 struct nodeBST *newNodeBST(char *key)
 {
     struct nodeBST *n = (struct nodeBST *)malloc(sizeof(struct nodeBST));
-    n->key = key;
+    n->key = malloc(sizeof(char)*100);
+strcpy(n->key, key);
     n->count = 1;
     n->left = NULL;
     n->right = NULL;
@@ -20,7 +21,8 @@ struct nodeBST *newNodeBST(char *key)
 struct nodeBST *newNodeBST2(char *key, int count)
 {
     struct nodeBST *n = (struct nodeBST *)malloc(sizeof(struct nodeBST));
-    n->key = key;
+    n->key = malloc(sizeof(char)*1000);
+strcpy(n->key, key);
     n->count = count;
     n->left = NULL;
     n->right = NULL;
@@ -51,19 +53,19 @@ struct nodeBST *insertBST(struct nodeBST *root, char *key)
     {
         return newNodeBST(key);
     }
-    int bal = strcmp(key, root->key);
+    int bal = strcmp(key, (root)->key);
     if (bal == 0)
     {
-        (root->count)++;
+        ((root)->count)++;
         return root;
     }
     if (bal < 0)
     {
-        root->left = insertBST(root->left, key);
+        (root)->left = insertBST((root)->left, key);
     }
     else
     {
-        root->right = insertBST(root->right, key);
+        (root)->right = insertBST((root)->right, key);
     }
     return root;
 }
@@ -99,7 +101,7 @@ void inOrderBST(struct nodeBST *root)
     if (root != NULL)
     {
         inOrderBST(root->left);
-        printf("inOrderBST: %s:%d\n", root->key, root->count);
+        printf("inOrderBST:token %s count%d\n", root->key, root->count);
         inOrderBST(root->right);
     }
     //printf("inOrderBST: root is null\n");

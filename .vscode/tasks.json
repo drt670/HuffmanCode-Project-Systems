@@ -3,13 +3,8 @@
     {
       "type": "shell",
       "label": "gcc build active file",
-      "command": "/bin/gcc",
-      "args": [
-        "-g",
-        "${file}",
-        "-o",
-        "${fileDirname}/${fileBasenameNoExtension}"
-      ],
+      "command": "gcc -O -w -g -o filecompressor filecompressor.c",
+      "args": [""],
       "options": {
         "cwd": "/bin"
       }

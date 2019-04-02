@@ -102,13 +102,14 @@ int main(int argc, char **argv)
 
     //char path[100] = ".";
     //listFilesRecursively(path);
-    struct nodeBST *root = NULL;
-    root = compressFile("test2.txt", &root);
-    inOrderBST(root);
-    root = compressFile("test2.txt", &root);
-    inOrderBST(root);
+    struct nodeBST *root =NULL;
+    //*root = malloc(sizeof(struct nodeBST));
+    compressFile("test.txt", &root);
+    //inOrderBST(root);
+    //root = compressFile("test.txt", &root);
+   // inOrderBST(root);
 
-    //huffmanEncode(&root, numTokens);
+    huffmanEncode(&root, numTokens);
 
     //string = getStringFromFile(filename);
 
@@ -119,13 +120,14 @@ int main(int argc, char **argv)
     return 0;
 }
 
-nodeBST *compressFile(char *path, nodeBST **rootc)
+nodeBST *compressFile(char *path, nodeBST **root)
 {
-    struct nodeBST *root = NULL;
-    root = *rootc;
+    //struct nodeBST *root = NULL;
+   // root = *rootc;
     char *text = getStringFromFile(path);
     // printf("%s", text);
-    char delimit[] = "  \t\r\n\v\f";
+    char *delimit = malloc(sizeof(char)*7);
+    delimit = " \t\r\n\v\f";
     //int i = 0, j = 0;
     char *token;
     int i, z;
@@ -134,56 +136,69 @@ nodeBST *compressFile(char *path, nodeBST **rootc)
     // iterate character by character, looking for your delimiter
     // each time you find one, you have a string from the last position of the length in difference - do what you want with that
     // set the new start position to the delimiter + 1, and the go to step 2.
-    i = 0;
-    int start = 0;
-    while (text[i] != '\0')
+    i = 1;
+    int length = 0;
+    const char *next;
+    while (text[i-1] != '\0')
     {
-        if (!strchr(delimit, (char)text[i]))
+        if(text[i]=='\0'){
+            char subbuff[length+ 2];
+                memcpy(subbuff, &text[i-1-length], length+1);
+                subbuff[length+1] = '\0';
+                *root = insertBST(*root, subbuff);
+        }
+        if ((next = strchr(delimit, (char)text[i-1]))!=NULL)
         {
+            //delimit[0]=' ';
             //delimitor found
             char subbuff[1];
-            subbuff[0] = text[i];
+            subbuff[0] = text[i-1];
 
             subbuff[1] = '\0';
-            root = insertBST(root, subbuff);
-            if (start != i)
+            *root = insertBST(*root, subbuff);
+            if (length != 0)
             {
                 //insert prev string
-                char subbuff[i - start + 1];
-                memcpy(subbuff, &text[start], i - start);
-                subbuff[i - start] = '\0';
-                root = insertBST(root, subbuff);
+                char subbuff[length+ 1];
+                memcpy(subbuff, &text[i-1-length], length);
+                subbuff[length] = '\0';
+                *root = insertBST(*root, subbuff);
+                length=0;
             }
             i++;
-            start = i;
+            //start = i;
         }
         else
         {
 
             i++;
+            length++;
         }
     }
-    token = 'a';
-    if (numTokens == 0 || numTokens == 16)
-    {
-        token = strtok(text, delimit);
-        root = insertBST(root, token);
-        numTokens++;
-    }
-    while (token != NULL)
-    {
-        //printf("found token:%s\n", token);
-        token = strtok(NULL, delimit);
-        if (token != NULL)
-        {
-            root = insertBST(root, token);
-            numTokens++;
-        }
-    }
+    // token = 'a';
+    // if (numTokens == 0 || numTokens == 16)
+    // {
+    //     token = strtok(text, delimit);
+    //     root = insertBST(root, token);
+    //     numTokens++;
+    // }
+    // while (token != NULL)
+    // {
+    //     //printf("found token:%s\n", token);
+    //     token = strtok(NULL, delimit);
+    //     if (token != NULL)
+    //     {
+    //         root = insertBST(root, token);
+    //         numTokens++;
+    //     }
+    // }
     printf("string has been tokenized.\n");
-    return root;
+     // inOrderBST(*root);
+      return *root;
+        //inOrderBST(root);
+
+    //return root;
     //prints inorder of bst sorted alphabetically
-    inOrderBST(root);
     // printf("tempBST: inorder of alphabetical has been printed.\n");
 }
 void huffmanEncode(nodeBST ***rootz, int numTokens)
